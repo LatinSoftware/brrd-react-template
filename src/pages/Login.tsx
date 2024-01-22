@@ -1,15 +1,19 @@
 import { Button } from "primereact/button";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { SignIn } from "../services/Login.service";
 
 export function Login() {
 
     const [loading, setLoading] = useState<boolean>(false)
 
+    const { register, formState:{errors}, handleSubmit } = useForm();
+
     const onSubmit = (event: React.SyntheticEvent) => {
 
-        event.preventDefault()
+        console.log("Submit enviado");
 
+        event.preventDefault()
 
         const target = event.target as typeof event.target & {
             username: { value: string };
@@ -34,33 +38,44 @@ export function Login() {
     }
 
     return (
-        <section className="bg-gray-50 dark:bg-gray-900">
-            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-                    <img className="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo" />
-                    Flowbite
-                </a>
-                <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                    <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-                        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                            Sign in to your account
-                        </h1>
-                        <form className="space-y-4 md:space-y-6" method="post" onSubmit={onSubmit} >
-                            <div>
-                                <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User</label>
-                                <input type="text" name="username" id="username" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required autoComplete="off" />
-                            </div>
-                            <div>
-                                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                <input type="password" name="password" id="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                            </div>
-                            <Button 
-                            type="submit" 
-                            label="Sign In"
-                            loading={loading} 
-                            className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"/>
-                        </form>
-                    </div>
+        <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
+            <div className="flex rounded-2xl shadow-lg max-w-3xl items-center  dark:bg-gray-800 dark:border-gray-700">
+                <div className="md:w-1/2 px-16 py-6">
+                    <h2 className="font-bold text-2xl text-gray-900 dark:text-white">Sign in to your account</h2>
+
+                    <form className="flex flex-col gap-4 mt-7" method="post" onSubmit={handleSubmit(() => onSubmit)} >
+                        <div>
+                            <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User</label>
+                            <input type="text" id="username" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" autoComplete="off" 
+                            { ...register("username",{ minLength:12, required:true, pattern:/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i }) }/>{
+                                errors.username?.type==="required" &&(
+                                    <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Llena la vaina bien.</p>
+                                )                                
+                            }{
+                                errors.username?.type == "pattern" &&(
+                                    <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">El formato de correo no es valido</p>
+                                )                                
+                            }
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                            <input type="password" id="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                            { ...register("password",{required:true}) }/>{
+                                errors.password?.type==="required" &&(
+                                    <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Llena eso y no seas haragan.</p>
+                                )                                
+                            }
+                        </div>
+                        <Button 
+                        type="submit" 
+                        label="Sign In"
+                        loading={loading} 
+                        className="w-full text-white bg-primary-600 hover:bg-primary-700 hover:scale-105 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"/>
+                    </form>
+
+                </div>
+                <div className="md:block hidden w-1/2">
+                    <img className="rounded-r-2xl" src="../public/images/banco.png" alt="" /> 
                 </div>
             </div>
         </section>

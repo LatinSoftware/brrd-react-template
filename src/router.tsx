@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import Root from "./routes/Root.tsx";
 import { NotFoundPage, SamplePage1, SamplePage2, Home } from "./pages";
-import { Login } from "./pages/Login.tsx";
+import { Login } from "./pages/Login.tsx" 
 
 
 
