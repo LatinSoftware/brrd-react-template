@@ -17,6 +17,7 @@ export default function useUser() {
 
         try {
             setLoading(true)
+            setError(null)
             const { token } = await LoginAsync({ username, password })
             window.sessionStorage.setItem('authToken', token)
 
