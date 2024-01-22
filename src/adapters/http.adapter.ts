@@ -13,7 +13,6 @@ interface Props<TData> {
 }
 
 export async function Post<TData, TResponse>({ url, data }: Props<TData>): Promise<TResponse> {
-
-    const response = await instance.post<TData, TResponse>(url, data)
-    return response
+    const response = await instance.post<TResponse>(url, data)
+    return response.data
 } 

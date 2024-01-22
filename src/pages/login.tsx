@@ -1,15 +1,30 @@
 import { Button } from "primereact/button";
-import React, { useState } from "react";
-import { SignIn } from "../services/Login.service";
+import React, { useEffect } from "react";
+
+
+import { useNavigate } from "react-router-dom";
+import useUser from "../hooks/useUsers";
 
 export function Login() {
 
-    const [loading, setLoading] = useState<boolean>(false)
+    const {
+        error,
+        loading,
+        login,
+        isLogged
+    } = useUser()
 
-    const onSubmit = (event: React.SyntheticEvent) => {
+    const navigate = useNavigate()
 
+    useEffect(() => {
+        if(!isLogged) return
+
+        navigate('/')
+
+    }, [isLogged, navigate])
+
+    const onSubmit = async (event: React.SyntheticEvent) => {
         event.preventDefault()
-
 
         const target = event.target as typeof event.target & {
             username: { value: string };
@@ -18,19 +33,7 @@ export function Login() {
 
         const username = target.username.value;
         const password = target.password.value;
-
-        setLoading(true)
-        try {
-            
-            SignIn({ username, password })
-            
-        } catch (error) {
-
-            console.error(error)
-
-        }finally{
-            setLoading(false)
-        }
+        await login({username, password})
     }
 
     return (
@@ -45,6 +48,12 @@ export function Login() {
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                             Sign in to your account
                         </h1>
+                        {error &&
+                            <div className="text-white bg-red-400 p-2 px-5">
+                                <p>{error}</p>
+                            </div>
+                        }
+
                         <form className="space-y-4 md:space-y-6" method="post" onSubmit={onSubmit} >
                             <div>
                                 <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User</label>
@@ -54,11 +63,11 @@ export function Login() {
                                 <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                                 <input type="password" name="password" id="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                             </div>
-                            <Button 
-                            type="submit" 
-                            label="Sign In"
-                            loading={loading} 
-                            className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"/>
+                            <Button
+                                type="submit"
+                                label="Sign In"
+                                loading={loading}
+                                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" />
                         </form>
                     </div>
                 </div>

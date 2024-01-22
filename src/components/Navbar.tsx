@@ -1,6 +1,15 @@
+import { Button } from "primereact/button";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import UserContext, { UserGlobalState } from "../context/userContext";
+import { AuthApiUserModel } from "../interfaces/auth-service.interface";
 
 export const NavbarComponent = () => {
+
+    const { userState } = useContext(UserContext)
+    const { userInfo } = userState as UserGlobalState
+    const { Profiles, FullName } = userInfo as AuthApiUserModel
+
     return (
         <header>
             <nav className="max-w-screen-xl bg-white border-gray-200 dark:bg-gray-900 ">
@@ -10,7 +19,13 @@ export const NavbarComponent = () => {
                         <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Application Name</span>
                     </a>
                     <div className="flex items-center space-x-6 rtl:space-x-reverse">
-                        <a href="#" className="text-sm  text-blue-600 dark:text-blue-500 hover:underline">Username</a>
+                        <div className="text-white flex flex-col justify-center items-center">
+                            <span className="font-semibold">{FullName}</span>
+                            <span className=" font-light text-sm  ">({Profiles.Name})</span>
+                        </div>
+                        <div>
+                            <Button aria-label="logout" icon="pi pi-power-off" severity="danger" />
+                        </div>
                     </div>
                 </div>
             </nav>
