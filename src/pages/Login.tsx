@@ -36,7 +36,7 @@ export function Login() {
     }
 
     return (
-        <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
+        <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-10 ">
             <div className="flex rounded-2xl shadow-lg max-w-5xl items-center  dark:bg-gray-800 dark:border-gray-700">
                 <div className="md:w-1/2 px-16 py-6">
                     <h2 className="font-bold text-2xl text-gray-900 dark:text-white">Sign in to your account</h2>
