@@ -1,11 +1,16 @@
-import { Button } from "primereact/button";
-import React, { useEffect } from "react";
-
-
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "primereact/button";
+import { Message } from "primereact/message";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Login } from "../interfaces/login.interface";
 import useUser from "../hooks/useUsers";
 
+
+
 export function Login() {
+
+
 
     const {
         error,
@@ -14,62 +19,67 @@ export function Login() {
         isLogged
     } = useUser()
 
+
+    const onSubmit: SubmitHandler<Login> = async ({username, password}) => {
+        await login({ username, password })
+    }
+
+    const { register, formState: { errors }, handleSubmit } = useForm<Login>();
+
     const navigate = useNavigate()
 
     useEffect(() => {
-        if(!isLogged) return
+        if (!isLogged) return
 
         navigate('/')
 
     }, [isLogged, navigate])
 
-    const onSubmit = async (event: React.SyntheticEvent) => {
-        event.preventDefault()
-
-        const target = event.target as typeof event.target & {
-            username: { value: string };
-            password: { value: string }
-        }
-
-        const username = target.username.value;
-        const password = target.password.value;
-        await login({username, password})
-    }
+   
 
     return (
-        <section className="bg-gray-50 dark:bg-gray-900">
-            <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                <a href="#" className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
-                    <img className="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo" />
-                    Flowbite
-                </a>
-                <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                    <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-                        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                            Sign in to your account
-                        </h1>
-                        {error &&
-                            <div className="text-white bg-red-400 p-2 px-5">
-                                <p>{error}</p>
-                            </div>
-                        }
+        <section className="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-10 ">
+            <div className="flex rounded-2xl shadow-lg max-w-5xl items-center  dark:bg-gray-800 dark:border-gray-700">
+                <div className="md:w-1/2 px-16 py-6">
+                    <h2 className="font-bold text-2xl text-gray-900 dark:text-white">Iniciar Sesión</h2>
+                    <form className="flex flex-col gap-4 mt-7" method="post" onSubmit={handleSubmit(onSubmit)} >
+                        
+                    {
+                        error &&
+                        <Message severity="error" text={error} />
+                    } 
+                        
 
-                        <form className="space-y-4 md:space-y-6" method="post" onSubmit={onSubmit} >
-                            <div>
-                                <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">User</label>
-                                <input type="text" name="username" id="username" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required autoComplete="off" />
-                            </div>
-                            <div>
-                                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                                <input type="password" name="password" id="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                            </div>
-                            <Button
-                                type="submit"
-                                label="Sign In"
-                                loading={loading}
-                                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" />
-                        </form>
-                    </div>
+                        <div className="relative">
+                            <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre de usuario</label>
+                            <input type="text" id="username" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" autoFocus placeholder="domain user (ajramirez)" autoComplete="off"
+                                {...register("username", { minLength: 1, required: true})}/>{
+                                errors.username?.type === "required" && (
+                                    <p className="absolute text-sm font-medium text-red-500">usuario requerido.</p>
+                                )
+                            }
+                        </div>
+                        <div className="relative">
+                            <label htmlFor="password" className="block my-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña</label>
+                            <input type="password" id="password" placeholder="••••••••" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                {...register("password", { required: true })} />{
+                                errors.password?.type === "required" && (
+                                    <span className="absolute text-sm font-medium text-red-500">contraseña requerida</span>
+                                )
+                            }
+                        </div>
+                        <Button
+                            type="submit"
+                            label="Sign In"
+                            loading={loading}
+                            className="mt-2 w-full text-white bg-primary-600 hover:bg-primary-700 hover:scale-105 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" />
+                            
+                    </form>
+                    
+
+                </div>
+                <div className="md:block hidden w-1/2">
+                    <img className="rounded-r-2xl" src="../public/images/banco.png" alt="" />
                 </div>
             </div>
         </section>
